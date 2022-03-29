@@ -1,0 +1,1 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/7185n1qc1j52qbk5?svg=true)](https://ci.appveyor.com/project/DaryMarty/transfercardtocard)
