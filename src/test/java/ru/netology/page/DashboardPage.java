@@ -12,29 +12,52 @@ import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
 public class DashboardPage {
-    private SelenideElement heading = $("[data-test-id=dashboard]");
+
+    public static class Card {
+        private final SelenideElement card;
+        private final String balanceStart = "баланс: ";
+        private final String balanceFinish = " р.";
+
+        public Card(SelenideElement card, DataHelper.CardInfo cardInfo) {
+            this.card = card;
+            this.info = cardInfo;
+        }
+
+        public final DataHelper.CardInfo info;
+
+        public int getCardBalance() {
+            return extractBalance(card.text());
+        }
+
+        public SelenideElement getDepositButton() {
+            return card.$("[data-test-id=action-deposit]");
+        }
+
+        public void topUp() {
+            val depositButton = this.getDepositButton();
+            if (depositButton != null) {
+                depositButton.click();
+            }
+        }
+
+        private int extractBalance(String text) {
+            val start = text.indexOf(balanceStart);
+            val finish = text.indexOf(balanceFinish);
+            val value = text.substring(start + balanceStart.length(), finish);
+            return Integer.parseInt(value);
+        }
+    }
+
+    private final SelenideElement heading = $("[data-test-id=dashboard]");
+    private final ElementsCollection cards = $$(".list__item");
 
     public DashboardPage() {
         heading.shouldBe(visible);
     }
 
-    private ElementsCollection cards = $$(".list__item");
-    private final String balanceStart = "баланс: ";
-    private final String balanceFinish = " р.";
+    public Card getCard(DataHelper.CardInfo cardInfo) {
+        val cardElement = cards.findBy(Condition.text(cardInfo.getId()));
 
-    public int getCardBalance (DataHelper.CardInfo cardInfo) {
-        // SelenideElement cardFirst = $("[data-test-id="92df3f1c-a033-48e6-8390-206f6b1f56c0"] div");
-        ///SelenideElement cardSecond = $("[data-test-id="0f3f5c2a-249e-4c3d-8287-09f7a039391d"] div");
-        String id = cardInfo.getId();
-        SelenideElement card = $ (withText(id));
-        val text =card.text();
-        return extractBalance(text);
-    }
-
-    private int extractBalance(String text) {
-        val start = text.indexOf(balanceStart);
-        val finish = text.indexOf(balanceFinish);
-        val value = text.substring(start + balanceStart.length(), finish);
-        return Integer.parseInt(value);
+        return new Card(cardElement, cardInfo);
     }
 }

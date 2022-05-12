@@ -1,5 +1,6 @@
 package ru.netology.data;
 
+import com.github.javafaker.Faker;
 import lombok.Value;
 
 public class DataHelper {
@@ -39,6 +40,14 @@ public class DataHelper {
 
     public static VerificationCode getVerificationCodeFor(AuthInfo authInfo) {
         return new VerificationCode("12345");
+    }
+
+    public static int getValidTransferAmount(int baseCardBalance) {
+        return new Faker().random().nextInt(1, baseCardBalance);
+    }
+
+    public static int getInvalidTransferAmount(int baseCardBalance) {
+        return new Faker().random().nextInt(baseCardBalance, 100000);
     }
 
 }
